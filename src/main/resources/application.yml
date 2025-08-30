@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: agile-tracker
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+      database: AgileTracker
+      auto-index-creation: true
+
+server:
+  port: 8080
