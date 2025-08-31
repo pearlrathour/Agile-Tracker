@@ -20,7 +20,7 @@ public class StoryController {
 
     // Create
     @PostMapping
-    public ResponseEntity<StoryEntity> createStory(@RequestBody StoryDTO dto) {
+    public ResponseEntity<?> createStory(@RequestBody StoryDTO dto) {
         return ResponseEntity.ok(storyService.createStory(dto));
     }
 

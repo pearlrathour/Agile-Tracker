@@ -32,11 +32,15 @@ public class EpicSteps {
 
     @When("I create the epic")
     public void i_create_the_epic() {
-        createdEpic = epicService.createEpic(epicDTO);
+        Optional<EpicEntity> optionalEpic = epicService.createEpic(epicDTO);
+        assertThat(optionalEpic).isPresent();
+        createdEpic = optionalEpic.get();
+        epicId = createdEpic.getId();
     }
 
     @Then("the returned epic should have title {string} and status {string}")
     public void the_returned_epic_should_have_title_and_status(String title, String status) {
+        assertThat(createdEpic).isNotNull();
         assertThat(createdEpic.getTitle()).isEqualTo(title);
         assertThat(createdEpic.getStatus()).isEqualTo(status);
     }
@@ -77,30 +81,37 @@ public class EpicSteps {
         dto.setTitle(title);
         dto.setCreatedById(createdById);
         dto.setStatus("OPEN");
-        EpicEntity epic = epicService.createEpic(dto);
-        epicId = epic.getId();
-        createdEpic = epic;
+
+        Optional<EpicEntity> optionalEpic = epicService.createEpic(dto);
+        assertThat(optionalEpic).isPresent();
+        createdEpic = optionalEpic.get();
+        epicId = createdEpic.getId();
     }
 
     @When("I fetch the epic by its ID")
     public void i_fetch_the_epic_by_its_ID() {
         Optional<EpicEntity> optionalEpic = epicService.getEpicById(epicId);
-        createdEpic = optionalEpic.orElse(null);
+        assertThat(optionalEpic).isPresent();
+        createdEpic = optionalEpic.get();
     }
 
     @Then("the returned epic should have title {string}")
     public void the_returned_epic_should_have_title(String title) {
+        assertThat(createdEpic).isNotNull();
         assertThat(createdEpic.getTitle()).isEqualTo(title);
     }
 
     // ------------------- Close Epic -------------------
     @When("I close the epic")
     public void i_close_the_epic() {
-        createdEpic = epicService.closeEpic(epicId);
+        Optional<EpicEntity> optionalEpic = epicService.closeEpic(epicId);
+        assertThat(optionalEpic).isPresent();
+        createdEpic = optionalEpic.get();
     }
 
     @Then("the returned epic should have status {string}")
     public void the_returned_epic_should_have_status(String status) {
+        assertThat(createdEpic).isNotNull();
         assertThat(createdEpic.getStatus()).isEqualTo(status);
     }
 }

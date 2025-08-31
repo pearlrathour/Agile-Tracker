@@ -37,7 +37,8 @@ public class StorySteps {
         epicDTO.setDescription("Some description");
         epicDTO.setStoryIds(new ArrayList<>());
         epicDTO.setStatus("OPEN");
-        epic = epicService.createEpic(epicDTO);
+        epic = epicService.createEpic(epicDTO)
+                .orElseThrow(() -> new RuntimeException("Epic creation failed"));
     }
 
     // ------------------- Create Story -------------------
@@ -54,7 +55,8 @@ public class StorySteps {
 
     @When("I create the story")
     public void i_create_the_story() {
-        createdStory = storyService.createStory(storyDTO);
+        createdStory = storyService.createStory(storyDTO)
+                .orElseThrow(() -> new RuntimeException("Story creation failed"));
     }
 
     @Then("the returned story should have title {string} and status {string}")
@@ -75,7 +77,8 @@ public class StorySteps {
             epicDTO.setDescription("Default epic");
             epicDTO.setStoryIds(new ArrayList<>());
             epicDTO.setStatus("OPEN");
-            EpicEntity defaultEpic = epicService.createEpic(epicDTO);
+            EpicEntity defaultEpic = epicService.createEpic(epicDTO)
+                    .orElseThrow(() -> new RuntimeException("Default epic creation failed"));
 
             StoryDTO defaultStory = new StoryDTO();
             defaultStory.setTitle("Default Story");
@@ -84,7 +87,8 @@ public class StorySteps {
             defaultStory.setAssigneeId("dev1");
             defaultStory.setReporterId("pm1");
             defaultStory.setStoryPoints(3);
-            storyService.createStory(defaultStory);
+            storyService.createStory(defaultStory)
+                    .orElseThrow(() -> new RuntimeException("Default story creation failed"));
         }
     }
 

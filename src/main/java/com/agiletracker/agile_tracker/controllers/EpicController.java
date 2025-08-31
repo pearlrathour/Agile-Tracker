@@ -17,7 +17,7 @@ public class EpicController {
     private final EpicService epicService;
 
     @PostMapping
-    public ResponseEntity<EpicEntity> createEpic(@RequestBody EpicDTO dto) {
+    public ResponseEntity<?> createEpic(@RequestBody EpicDTO dto) {
         return ResponseEntity.ok(epicService.createEpic(dto));
     }
 
@@ -34,7 +34,7 @@ public class EpicController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EpicEntity> closeEpic(@PathVariable String id) {
+    public ResponseEntity<?> closeEpic(@PathVariable String id) {
         return ResponseEntity.ok(epicService.closeEpic(id));
     }
 }

@@ -4,11 +4,13 @@ import com.agiletracker.agile_tracker.dto.UserDTO;
 import com.agiletracker.agile_tracker.entities.UserEntity;
 import com.agiletracker.agile_tracker.repositories.UserRepository;
 import com.agiletracker.agile_tracker.services.UserService;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,33 +20,40 @@ public class UserServiceSteps {
     private UserRepository userRepository;
 
     private UserService userService;
-    private UserDTO createdUser;
+    private Optional<UserDTO> createdUser;
     private List<UserDTO> users;
-    private UserDTO fetchedUser;
+    private Optional<UserDTO> fetchedUser;
+
+    // Initialize UserService before each scenario
+    @Before
+    public void setup() {
+        userService = new UserService(userRepository, new ModelMapper());
+    }
 
     // Create a new user
 
     @Given("a user with name {string}, email {string}, and role {string}")
     public void a_user_with_name_email_and_role(String name, String email, String role) {
-        userService = new UserService(userRepository, new ModelMapper());
-        createdUser = new UserDTO(null, name, email, role);
+        createdUser = Optional.of(new UserDTO(null, name, email, role));
     }
 
     @When("I create the user")
     public void i_create_the_user() {
-        createdUser = userService.createUser(createdUser);
+        createdUser = userService.createUser(createdUser.get());
     }
 
     @Then("the returned user should have name {string} and role {string}")
     public void the_returned_user_should_have_name_and_role(String name, String role) {
-        assertThat(createdUser.getName()).isEqualTo(name);
-        assertThat(createdUser.getRole()).isEqualTo(role);
+        assertThat(createdUser).isPresent();
+        createdUser.ifPresent(user -> {
+            assertThat(user.getName()).isEqualTo(name);
+            assertThat(user.getRole()).isEqualTo(role);
+        });
     }
 
     // Get all users
     @Given("some users exist")
     public void some_users_exist() {
-        userService = new UserService(userRepository, new ModelMapper());
         userService.createUser(new UserDTO(null, "Alice", "alice@example.com", "DEVELOPER"));
         userService.createUser(new UserDTO(null, "Bob", "bob@example.com", "PRODUCT_MANAGER"));
     }
@@ -62,7 +71,6 @@ public class UserServiceSteps {
     // Get user by ID
     @Given("a user with id {string} exists")
     public void a_user_with_id_exists(String id) {
-        userService = new UserService(userRepository, new ModelMapper());
         UserEntity entity = UserEntity.builder()
                 .id(id)
                 .name("Charlie")
@@ -79,6 +87,7 @@ public class UserServiceSteps {
 
     @Then("the returned user should have id {string}")
     public void the_returned_user_should_have_id(String id) {
-        assertThat(fetchedUser.getId()).isEqualTo(id);
+        assertThat(fetchedUser).isPresent();
+        fetchedUser.ifPresent(user -> assertThat(user.getId()).isEqualTo(id));
     }
 }

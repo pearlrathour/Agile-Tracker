@@ -5,10 +5,13 @@ import com.agiletracker.agile_tracker.entities.EpicEntity;
 import com.agiletracker.agile_tracker.entities.StoryEntity;
 import com.agiletracker.agile_tracker.repositories.EpicRepository;
 import com.agiletracker.agile_tracker.repositories.StoryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class StoryService {
 
@@ -21,31 +24,41 @@ public class StoryService {
     }
 
     // Create story
-    public StoryEntity createStory(StoryDTO dto) {
-        EpicEntity epic = epicRepository.findById(dto.getEpicId())
-                .orElseThrow(() -> new RuntimeException("Epic not found"));
+    public Optional<StoryEntity> createStory(StoryDTO dto) {
+        try{
+            EpicEntity epic = epicRepository.findById(dto.getEpicId())
+                    .orElseThrow(() -> new RuntimeException("Epic not found"));
 
-        StoryEntity story = StoryEntity.builder()
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .epicId(dto.getEpicId())
-                .assigneeId(dto.getAssigneeId())
-                .reporterId(dto.getReporterId())
-                .storyPoints(dto.getStoryPoints())
-                .status("TODO")
-                .build();
+            StoryEntity story = StoryEntity.builder()
+                    .title(dto.getTitle())
+                    .description(dto.getDescription())
+                    .epicId(dto.getEpicId())
+                    .assigneeId(dto.getAssigneeId())
+                    .reporterId(dto.getReporterId())
+                    .storyPoints(dto.getStoryPoints())
+                    .status("TODO")
+                    .build();
 
-        StoryEntity saved = storyRepository.save(story);
+            StoryEntity saved = storyRepository.save(story);
 
-        epic.getStoryIds().add(saved.getStoryId());
-        epicRepository.save(epic);
+            epic.getStoryIds().add(saved.getStoryId());
+            epicRepository.save(epic);
 
-        return saved;
+            return Optional.of(saved);
+        } catch (Exception e) {
+            log.error("Failed to create story: {}", e.getMessage(), e);
+            return Optional.empty();
+        }
     }
 
     // Get all stories
     public List<StoryEntity> getAllStories() {
-        return storyRepository.findAll();
+        try {
+            return storyRepository.findAll();
+        } catch (Exception e) {
+            log.error("Failed to fetch stories: {}", e.getMessage(), e);
+            return List.of();
+        }
     }
 
 //    // Get stories by Epic
