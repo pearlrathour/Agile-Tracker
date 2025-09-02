@@ -9,9 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM',
-                          branches: [[name: 'main']],
-                          userRemoteConfigs: [[url: 'https://github.com/pearlrathour/Agile-Tracker.git']]])
+                git branch: 'main', url: 'https://github.com/pearlrathour/Agile-Tracker.git'
             }
         }
 
@@ -40,7 +38,9 @@ pipeline {
 
     post {
         always {
-            sh 'docker system prune -f'
+            script {
+                sh 'docker system prune -f'
+            }
         }
     }
 }
