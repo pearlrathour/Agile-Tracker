@@ -3,11 +3,15 @@ package com.agiletracker.agile_tracker.controllers;
 import com.agiletracker.agile_tracker.dto.StoryDTO;
 import com.agiletracker.agile_tracker.entities.StoryEntity;
 import com.agiletracker.agile_tracker.services.StoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Stories", description = "Endpoints for managing stories")
 @RestController
 @RequestMapping("/stories")
 public class StoryController {
@@ -19,12 +23,19 @@ public class StoryController {
     }
 
     // Create
+    @Operation(summary = "Create a new story", description = "Creates a new story and assigns it to an epic")
     @PostMapping
-    public ResponseEntity<?> createStory(@RequestBody StoryDTO dto) {
+    public ResponseEntity<?> createStory(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Story details",
+            required = true
+        )
+        @RequestBody StoryDTO dto) {
         return ResponseEntity.ok(storyService.createStory(dto));
     }
 
     // Get all
+    @Operation(summary = "Get all stories", description = "Returns a list of all stories in the system")
     @GetMapping
     public ResponseEntity<List<StoryEntity>> getAllStories() {
         return ResponseEntity.ok(storyService.getAllStories());
