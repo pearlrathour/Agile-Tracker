@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "Epics", description = "Endpoints for managing epics")
 @RestController
@@ -31,7 +32,9 @@ public class EpicController {
             required = true
         )
         @RequestBody EpicDTO dto) {
-        return ResponseEntity.ok(epicService.createEpic(dto));
+        return epicService.createEpic(dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @Operation(
@@ -57,13 +60,32 @@ public class EpicController {
     }
 
     @Operation(
-        summary = "Close an epic",
-        description = "Closes the epic with the specified ID."
+            summary = "Update an epic by ID",
+            description = "Updates the epic with the specified ID. Only non-null fields will be updated."
     )
     @PutMapping("/{id}")
-    public ResponseEntity<?> closeEpic(
-        @Parameter(description = "ID of the epic to close", example = "epic123")
-        @PathVariable String id) {
-        return ResponseEntity.ok(epicService.closeEpic(id));
+    public ResponseEntity<?> updateEpic(
+            @Parameter(description = "ID of the epic to update", example = "epic123")
+            @PathVariable String id,
+            @RequestBody EpicDTO dto) {
+        Optional<EpicEntity> updated = epicService.updateEpic(id, dto);
+        return updated.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(
+            summary = "Delete an epic by ID",
+            description = "Deletes the epic with the specified ID."
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEpic(
+            @Parameter(description = "ID of the epic to delete", example = "epic123")
+            @PathVariable String id) {
+        boolean deleted = epicService.deleteEpic(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

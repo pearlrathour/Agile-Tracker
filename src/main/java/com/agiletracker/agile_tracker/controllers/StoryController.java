@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "Stories", description = "Endpoints for managing stories")
 @RestController
@@ -31,7 +32,9 @@ public class StoryController {
             required = true
         )
         @RequestBody StoryDTO dto) {
-        return ResponseEntity.ok(storyService.createStory(dto));
+        return storyService.createStory(dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     // Get all
@@ -41,16 +44,46 @@ public class StoryController {
         return ResponseEntity.ok(storyService.getAllStories());
     }
 
-//    // Get by epic
-//    @GetMapping("/epic/{epicId}")
-//    public ResponseEntity<List<StoryEntity>> getStoriesByEpic(@PathVariable String epicId) {
-//        return ResponseEntity.ok(storyService.getStoriesByEpic(epicId));
-//    }
+    @Operation(
+            summary = "Get story by ID",
+            description = "Fetches the story with the specified ID."
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<StoryEntity> getStoryById(
+            @Parameter(description = "ID of the story to fetch", example = "story123")
+            @PathVariable String id) {
+        return storyService.getStoryById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-//    // Update status
-//    @PutMapping("/{storyId}/status/{status}")
-//    public ResponseEntity<StoryEntity> updateStatus(@PathVariable String storyId,
-//                                                    @PathVariable String status) {
-//        return ResponseEntity.ok(storyService.updateStatus(storyId, status));
-//    }
+    @Operation(
+            summary = "Update a story by ID",
+            description = "Updates the story with the specified ID. Only non-null fields will be updated."
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateStory(
+            @Parameter(description = "ID of the story to update", example = "story123")
+            @PathVariable String id,
+            @RequestBody StoryDTO dto) {
+        Optional<StoryEntity> updated = storyService.updateStory(id, dto);
+        return updated.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(
+            summary = "Delete a story by ID",
+            description = "Deletes the story with the specified ID."
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStory(
+            @Parameter(description = "ID of the story to delete", example = "story123")
+            @PathVariable String id) {
+        boolean deleted = storyService.deleteStory(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

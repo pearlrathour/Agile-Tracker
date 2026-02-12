@@ -1,5 +1,6 @@
 package com.agiletracker.agile_tracker.dto;
 
+import com.agiletracker.agile_tracker.Status.EpicStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,5 @@ public class EpicDTO {
     private String title;
     private String description;
     private String createdById;
-    private List<String> storyIds = new ArrayList<>();
-    private String status;
+    private EpicStatus status; //TODO, IN_PROGRESS, DONE
 }

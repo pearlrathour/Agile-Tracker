@@ -3,9 +3,9 @@ spring:
     name: agile-tracker
   data:
     mongodb:
-      uri: ${MONGO_URI}
+      uri: mongodb+srv://rathourpearl:HL5eE0vN3b4aLbIJ@cluster3.ftvkd5b.mongodb.net/?retryWrites=true&w=majority&appName=Cluster3
       database: AgileTracker
       auto-index-creation: true
 
 server:
-  port: 8080
+  port: 9090

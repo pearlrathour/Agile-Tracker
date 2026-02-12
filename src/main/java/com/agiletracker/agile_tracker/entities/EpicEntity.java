@@ -1,5 +1,6 @@
 package com.agiletracker.agile_tracker.entities;
 
+import com.agiletracker.agile_tracker.Status.EpicStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,8 +21,7 @@ public class EpicEntity {
     private String id;
     private String title;
     private String description;
-    private String createdById; // Product Manager userId
-    private List<String> storyIds = new ArrayList<>();
-    private String status; // OPEN, CLOSED
+    private String createdById;
+    private EpicStatus status; // TODO, IN_PROGRESS, DONE
 }
 

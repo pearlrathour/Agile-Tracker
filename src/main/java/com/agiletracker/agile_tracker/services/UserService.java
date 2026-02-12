@@ -67,4 +67,38 @@ public class UserService {
             return Optional.empty();
         }
     }
+
+    public Optional<UserDTO> updateUser(String id, UserDTO dto) {
+        try {
+            log.info("Updating user with ID: {}", id);
+            return userRepository.findById(id)
+                    .map(existing -> {
+                        if (dto.getName() != null) {
+                            existing.setName(dto.getName());
+                        }
+                        if (dto.getEmail() != null) {
+                            existing.setEmail(dto.getEmail());
+                        }
+                        if (dto.getRole() != null) {
+                            existing.setRole(dto.getRole());
+                        }
+                        UserEntity updated = userRepository.save(existing);
+                        log.info("User updated successfully with id: {}", updated.getId());
+                        return modelMapper.map(updated, UserDTO.class);
+                    });
+        } catch (Exception e) {
+            log.error("Error updating user with ID {}: {}", id, e.getMessage(), e);
+            return Optional.empty();
+        }
+    }
+
+    public void deleteUser(String id) {
+        try {
+            log.info("Deleting user with ID: {}", id);
+            userRepository.deleteById(id);
+            log.info("User deleted successfully with ID: {}", id);
+        } catch (Exception e) {
+            log.error("Error deleting user with ID {}: {}", id, e.getMessage(), e);
+        }
+    }
 }

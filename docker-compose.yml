@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: agile-tracker
+    depends_on:
+      - mongo
+    ports:
+      - "9090:9090"
+
+  mongo:
+    image: mongo:latest
+    container_name: agile-tracker-mongo
+    environment:
+      MONGODB_URI: MONGO_URI=mongodb+srv://rathourpearl:HL5eE0vN3b4aLbIJ@cluster3.ftvkd5b.mongodb.net/?retryWrites\=true&w\=majority&appName\=Cluster3
+      MONGO_DATABASE: AgileTracker
+    ports:
+      - "27017:27017"

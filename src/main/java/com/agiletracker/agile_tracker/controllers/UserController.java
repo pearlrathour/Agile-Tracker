@@ -49,4 +49,27 @@ public class UserController {
         @PathVariable String id) {
         return userService.getUserById(id);
     }
+
+    @Operation(
+            summary = "Update user by ID",
+            description = "Updates the user with the specified ID."
+    )
+    @PutMapping("/{id}")
+    public Optional<UserDTO> updateUser(
+            @Parameter(description = "ID of the user to update", example = "user123")
+            @PathVariable String id,
+            @RequestBody UserDTO dto) {
+        return userService.updateUser(id, dto);
+    }
+
+    @Operation(
+            summary = "Delete user by ID",
+            description = "Deletes the user with the specified ID."
+    )
+    @DeleteMapping("/{id}")
+    public void deleteUser(
+            @Parameter(description = "ID of the user to delete", example = "user123")
+            @PathVariable String id) {
+        userService.deleteUser(id);
+    }
 }
